@@ -1,0 +1,21 @@
+2026-05-22 | started project | 1pm | narvin
+2026-05-22 | log off | 3:47pm | narvin
+2026-05-22 | log in | 7:00pm | narvin
+2026-05-22 | log off | 8:32pm | narvin
+2026-06-14 | log in | phase 2 step 17 project_task | 6.30pm | narvin
+added /project_task_add  /project_tasks /project_task_done
+2026-06-14 | log off | phase 2 complete | 8.32.17 | narvin
+2026-06-16 | log in | phase 3 step 18  -> phase 2.5 terminal ui | 6:00pm | narvin
+unexpected error right at the start. 
+building terminal interface and assistant_core terminal_ui and git is moved forward to 3.5 ie step 22
+ran into an unexpected edge case telegram comands doesnt work properly
+2026-06-16 | log off | phase 2.5 terminal ui has not completed | 8:45pm | narvin
+2026-06-19 | log in | phase 2.5 terminal_ui | 6:50pm | narvin
+Phase 3 Step 18A Core Architecture Refactor 
+goal assistant_core.py
+    Project functions
+telegram_ui.py
+    Telegram only
+terminal_ui.py
+    Terminal only
+    

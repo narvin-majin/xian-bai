@@ -1,0 +1,158 @@
+# FEATURE IDEAS
+
+Last Updated:
+2026-06-16
+
+Purpose:
+Store future ideas without disrupting current development.
+
+--------------------------------------------------
+
+[2026-06-14]
+
+Bulk Project Task Creation
+
+Command:
+
+/project_task_bulk
+
+Example:
+
+Build session tracker
+Add project stats
+Fix bug
+
+Status:
+Future
+
+--------------------------------------------------
+
+[2026-06-14]
+
+Bulk Reminder Creation
+
+Command:
+
+/reminder_bulk
+
+Example:
+
+Math Exam | 2026-11-20 | 09:00
+Physics Exam | 2026-11-22 | 14:00
+
+Status:
+Future
+
+--------------------------------------------------
+
+[2026-06-14]
+
+Calendar Integration
+
+Google Calendar
+
+Apple Calendar
+
+Status:
+Future
+
+--------------------------------------------------
+
+[2026-06-14]
+
+Memory Confidence System
+
+Example:
+
+confidence: 0.82
+
+Status:
+Research
+
+--------------------------------------------------
+
+[2026-06-14]
+
+Burnout Prediction
+
+Status:
+Future
+
+--------------------------------------------------
+
+[2026-06-14]
+
+Opportunity Suggestions
+
+Status:
+Future
+
+--------------------------------------------------
+
+[2026-06-14]
+
+Advanced Analytics Dashboard
+
+Status:
+Future
+
+--------------------------------------------------
+
+[2026-06-14]
+
+Natural Language Reminder Parsing
+
+Example:
+
+Remind me tomorrow at 7 PM
+
+Status:
+Future
+
+--------------------------------------------------
+
+[2026-06-16]
+
+Multi-Platform Architecture
+
+Goal:
+
+One core assistant.
+
+Many frontends.
+
+Structure:
+
+xianbai/
+
+core/
+    projects.py
+    tasks.py
+    memory.py
+    commands.py
+
+platforms/
+    telegram.py
+    terminal.py
+    discord.py
+
+Benefits:
+
+- Telegram replacement
+- Discord support
+- Terminal support
+- Oracle deployment easier
+
+Status:
+Future
+
+--------------------------------------------------
+
+[2026-06-16]
+
+Terminal Mode
+
+Temporary development mode while Telegram is blocked.
+
+Status:
+Implemented

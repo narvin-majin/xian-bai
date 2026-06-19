@@ -1,0 +1,13 @@
+.venv/
+.env
+
+__pycache__/
+*.pyc
+
+logs/
+
+chat_history.json
+state.json
+history.json
+
+*.log

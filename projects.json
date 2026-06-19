@@ -1,0 +1,24 @@
+{
+    "active_project": "Tiny Assistant",
+    "projects": {
+        "Tiny Assistant": {
+            "tasks": [
+                {
+                    "task": "Build session tracker",
+                    "done": false,
+                    "created": "2026-06-14T20:04:19.369260"
+                },
+                {
+                    "task": "step 17.1",
+                    "done": true,
+                    "created": "2026-06-14T20:06:25.105995"
+                }
+            ],
+            "created": "2026-05-22T19:15:48.945192"
+        },
+        "xian bai": {
+            "tasks": [],
+            "created": "2026-05-22T19:37:58.578392"
+        }
+    }
+}
