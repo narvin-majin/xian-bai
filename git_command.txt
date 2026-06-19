@@ -1,5 +1,64 @@
+for tree
+
 find . -maxdepth 2 -type f | sort
+
+----------------------------------------
+
 for ai review
+
 pip install repomix
-use
+
+use:
 repomix
+
+-------------------------------------------
+git 
+
+start on new machine:
+
+git pull
+
+end:
+
+Check changes:
+
+git status
+
+See what changed:
+
+git diff
+
+Commit:
+
+git add .
+git commit -m "Implemented command router foundation"
+
+Push:
+
+git push
+
+------------------------------------------------------
+Before Large Changes
+
+Create a checkpoint commit:
+
+git add .
+git commit -m "Checkpoint before architecture refactor"
+git push
+
+Then start refactoring.
+
+If everything explodes:
+
+git log --oneline
+
+Example:
+
+a578b9e Checkpoint before architecture refactor
+
+Rollback:
+
+git reset --hard a578b9e
+
+Be careful: --hard deletes uncommitted changes.
+
