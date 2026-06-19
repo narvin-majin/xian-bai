@@ -11,11 +11,42 @@ building terminal interface and assistant_core terminal_ui and git is moved forw
 ran into an unexpected edge case telegram comands doesnt work properly
 2026-06-16 | log off | phase 2.5 terminal ui has not completed | 8:45pm | narvin
 2026-06-19 | log in | phase 2.5 terminal_ui | 6:50pm | narvin
-Phase 3 Step 18A Core Architecture Refactor 
+Phase 2.5
+Core Refactor 
 goal assistant_core.py
     Project functions
 telegram_ui.py
     Telegram only
 terminal_ui.py
     Terminal only
-    
+2026-06-19
+LOG OFF
+
+Current Phase:
+2.5 Core Architecture Refactor
+
+Completed Today:
+- Reviewed repository
+- Identified architecture issue
+- Confirmed terminal commands are not using project files directly
+- Created GitHub backup
+- Planned project_manager.py migration
+
+Not Completed:
+- project_manager.py
+- command_router integration
+
+Next Step:
+Create project_manager.py
+
+Move:
+- load_projects()
+- save_projects()
+
+out of app.py
+
+Status:
+Refactor in progress
+
+Time:
+8:37pm
