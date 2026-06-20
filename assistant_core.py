@@ -64,5 +64,5 @@ Keep answers concise.
             "text": reply
         }
     )
-
+    del chat_history[:-20]
     return reply

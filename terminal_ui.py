@@ -1,4 +1,5 @@
 from assistant_core import process_message
+from command_router import handle_command
 
 
 def start_terminal(
@@ -19,14 +20,22 @@ def start_terminal(
         if user_input.lower() == "exit":
             break
 
-        reply = process_message(
-            user_input,
-            state,
-            projects,
-            chat_history,
-            client
-        )
+        if user_input.startswith("/"):
 
-        save_chat_history()
+            reply = handle_command(
+                user_input,
+            )
+
+        else:
+
+            reply = process_message(
+                user_input,
+                state,
+                projects,
+                chat_history,
+                client
+            )
+
+        save_chat_history(chat_history)
 
         print(f"\nXian Bai > {reply}")
