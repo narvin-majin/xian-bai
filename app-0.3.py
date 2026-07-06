@@ -44,8 +44,16 @@ if not TELEGRAM_TOKEN or not GEMINI_API_KEY:
 
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
 client = genai.Client(api_key=GEMINI_API_KEY)
-register_handlers(bot)
 
+
+register_handlers(
+    bot,
+    client,
+    state,
+    projects,
+    chat_history,
+    save_chat_history
+)
     
 # ==================================================
 # RUN
@@ -55,7 +63,7 @@ register_handlers(bot)
 
 # bot.infinity_polling()
 
-TEST_MODE = 1
+TEST_MODE = False
 
 if TEST_MODE:
 

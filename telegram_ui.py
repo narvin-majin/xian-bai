@@ -1,5 +1,6 @@
+from telegram_commands import register_commands
+
 from project_manager import (
-    load_projects,
     create_project,
     switch_project,
     add_project_task,
@@ -7,7 +8,7 @@ from project_manager import (
     complete_project_task,
     list_projects
 )
-projects = load_projects()
+
 
 from state_manager import (
     track_task,
@@ -29,6 +30,9 @@ def register_handlers(
     # ==================================================
     # COMMANDS
     # ==================================================
+    
+    register_commands(bot)
+
 
     @bot.message_handler(commands=["start"])
     def start(message):

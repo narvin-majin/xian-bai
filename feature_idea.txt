@@ -1,158 +1,211 @@
-# FEATURE IDEAS
+# Xian Bai Feature Ideas
 
 Last Updated:
-2026-06-16
+2026-07-06
 
 Purpose:
-Store future ideas without disrupting current development.
+Ideas for future versions.
+These are intentionally kept separate from the development plan.
 
---------------------------------------------------
+---
 
-[2026-06-14]
+## Productivity
 
-Bulk Project Task Creation
+### Bulk Project Tasks
 
 Command:
 
 /project_task_bulk
 
-Example:
-
-Build session tracker
-Add project stats
-Fix bug
-
 Status:
 Future
 
---------------------------------------------------
+---
 
-[2026-06-14]
-
-Bulk Reminder Creation
+### Bulk Reminders
 
 Command:
 
 /reminder_bulk
 
-Example:
+Status:
+Future
 
-Math Exam | 2026-11-20 | 09:00
-Physics Exam | 2026-11-22 | 14:00
+---
+
+### Natural Language Commands
+
+Examples:
+
+Track learning Python
+
+Remind me tomorrow at 7 PM
+
+Switch to Tiny Assistant project
 
 Status:
 Future
 
---------------------------------------------------
+---
 
-[2026-06-14]
+### Session Timer
 
-Calendar Integration
+Automatic session duration.
 
-Google Calendar
+Pomodoro mode.
 
-Apple Calendar
+Idle detection.
 
 Status:
 Future
 
---------------------------------------------------
+---
 
-[2026-06-14]
+## AI Memory
 
-Memory Confidence System
+### Long-Term Memory
+
+assistant_memory.json
+
+Remember important facts.
+
+Status:
+Planned
+
+---
+
+### User Profile
+
+user_profile.json
+
+Store:
+
+- goals
+- preferences
+- skills
+- interests
+
+Status:
+Planned
+
+---
+
+### Memory Confidence
+
+Each memory stores confidence.
 
 Example:
 
-confidence: 0.82
+confidence = 0.92
 
 Status:
 Research
 
---------------------------------------------------
+---
 
-[2026-06-14]
+## Analytics
 
-Burnout Prediction
+Burnout prediction
 
-Status:
-Future
+Focus trends
 
---------------------------------------------------
+Weekly reports
 
-[2026-06-14]
+Opportunity suggestions
 
-Opportunity Suggestions
-
-Status:
-Future
-
---------------------------------------------------
-
-[2026-06-14]
-
-Advanced Analytics Dashboard
+Learning progress
 
 Status:
 Future
 
---------------------------------------------------
+---
 
-[2026-06-14]
+## Multi-Platform
 
-Natural Language Reminder Parsing
+Architecture:
 
-Example:
+assistant_core.py
 
-Remind me tomorrow at 7 PM
+↓
+
+Managers
+
+↓
+
+Telegram
+
+↓
+
+Terminal
+
+↓
+
+Discord
+
+↓
+
+Web UI
+
+Status:
+Partially Implemented
+
+Current:
+
+✅ Terminal
+
+✅ Telegram (code complete)
+
+Future:
+
+⬜ Discord
+
+⬜ Web
+
+---
+
+## AI Improvements
+
+Conversation summarization
+
+Automatic context compression
+
+Smart project context
+
+Memory retrieval
 
 Status:
 Future
 
---------------------------------------------------
+---
 
-[2026-06-16]
+## Developer Tools
 
-Multi-Platform Architecture
+Automatic backups
 
-Goal:
+Git helper
 
-One core assistant.
+Project export
 
-Many frontends.
+Import/export assistant memory
 
-Structure:
+Debug mode
 
-xianbai/
-
-core/
-    projects.py
-    tasks.py
-    memory.py
-    commands.py
-
-platforms/
-    telegram.py
-    terminal.py
-    discord.py
-
-Benefits:
-
-- Telegram replacement
-- Discord support
-- Terminal support
-- Oracle deployment easier
+Repomix export
 
 Status:
 Future
 
---------------------------------------------------
+---
 
-[2026-06-16]
+## Deployment
 
-Terminal Mode
+Oracle Cloud
 
-Temporary development mode while Telegram is blocked.
+Docker
+
+Automatic updates
+
+Persistent storage
 
 Status:
-Implemented
+Future

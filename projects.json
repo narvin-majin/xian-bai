@@ -32,7 +32,7 @@
                 },
                 {
                     "task": "Test commands",
-                    "done": false
+                    "done": true
                 }
             ],
             "created": ""
