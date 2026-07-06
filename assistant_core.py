@@ -1,5 +1,6 @@
-import json
-from pathlib import Path
+
+MAX_CONTEXT = 10
+MAX_HISTORY = 20
 
 def process_message(
     user_text,
@@ -19,27 +20,16 @@ def process_message(
     recent_chat = "\n".join(
         [
             f"{msg['role']}: {msg['text']}"
-            for msg in chat_history[-10:]
+            for msg in chat_history[-MAX_CONTEXT:]
         ]
     )
 
-    prompt = f"""
-You are Xian Bai.
-
-You are a direct, practical and friendly
-personal productivity assistant.
-
-Current State:
-{state}
-
-Active Project:
-{projects["active_project"]}
-
-Recent Conversation:
-{recent_chat}
-
-Keep answers concise.
-"""
+    prompt = build_prompt(
+        state,
+        projects,
+        recent_chat
+    )
+    
 
     try:
 
@@ -56,7 +46,10 @@ Keep answers concise.
 
     except Exception as e:
 
-        reply = f"Gemini Error: {e}"
+        reply = (
+            "Gemini is currently unavailable.\n"
+            f"Error: {e}"
+        )
 
     chat_history.append(
         {
@@ -64,5 +57,26 @@ Keep answers concise.
             "text": reply
         }
     )
-    del chat_history[:-20]
+    chat_history[:] = chat_history[-MAX_HISTORY:]
     return reply
+
+
+def build_prompt(state, projects, recent_chat):
+
+    return f"""
+You are Xian Bai.
+
+You are a direct, practical and friendly
+personal productivity assistant.
+
+Current State:
+{state}
+
+Active Project:
+{projects["active_project"]}
+
+Recent Conversation:
+{recent_chat}
+
+Keep answers concise.
+"""

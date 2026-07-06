@@ -52,29 +52,6 @@ register_handlers(bot)
 
     
 # ==================================================
-# CHAT
-# ==================================================
-
-@bot.message_handler(func=lambda message: True)
-def chat(message):
-
-    reply = process_message(
-        message.text.strip(),
-        state,
-        projects,
-        chat_history,
-        client
-    )
-
-    save_chat_history(chat_history)
-
-    bot.reply_to(
-        message,
-        reply
-    )
-
-
-# ==================================================
 # RUN
 # ==================================================
 

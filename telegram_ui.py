@@ -15,7 +15,16 @@ from state_manager import (
     get_status
 )
 
-def register_handlers(bot):
+from assistant_core import process_message
+
+def register_handlers(
+    bot,
+    client,
+    state,
+    projects,
+    chat_history,
+    save_chat_history
+):
     
     # ==================================================
     # COMMANDS
@@ -147,4 +156,27 @@ def register_handlers(bot):
         bot.reply_to(
             message,
             complete_project_task(task_number)
+        )
+
+
+    # ==================================================
+    # CHAT
+    # ==================================================
+
+    @bot.message_handler(func=lambda message: True)
+    def chat(message):
+
+        reply = process_message(
+            message.text.strip(),
+            state,
+            projects,
+            chat_history,
+            client
+        )
+
+        save_chat_history(chat_history)
+
+        bot.reply_to(
+            message,
+            reply
         )
