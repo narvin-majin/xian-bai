@@ -1,7 +1,4 @@
 import os
-import json
-from pathlib import Path
-from datetime import datetime
 
 from terminal_ui import start_terminal
 from telegram_ui import register_handlers
@@ -9,7 +6,6 @@ from telegram_ui import register_handlers
 from dotenv import load_dotenv
 import telebot
 from google import genai
-from assistant_core import process_message
 
 from state_manager import (
     load_state,
