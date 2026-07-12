@@ -18,6 +18,13 @@ from state_manager import (
 
 from assistant_core import process_message
 
+from session_manager import (
+    start_session,
+    stop_session,
+    get_session_status,
+    get_project_stats
+)
+
 def register_handlers(
     bot,
     client,
@@ -162,6 +169,41 @@ def register_handlers(
             complete_project_task(task_number)
         )
 
+
+    @bot.message_handler(commands=["session_start"])
+    def session_start(message):
+
+        bot.reply_to(
+            message,
+            start_session()
+        )
+
+
+    @bot.message_handler(commands=["session_stop"])
+    def session_stop(message):
+
+        bot.reply_to(
+            message,
+            stop_session()
+        )
+
+
+    @bot.message_handler(commands=["session_status"])
+    def session_status(message):
+
+        bot.reply_to(
+            message,
+            get_session_status()
+        )
+
+
+    @bot.message_handler(commands=["project_stats"])
+    def project_stats_cmd(message):
+
+        bot.reply_to(
+            message,
+            get_project_stats()
+        )
 
     # ==================================================
     # CHAT

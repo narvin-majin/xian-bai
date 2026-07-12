@@ -1,0 +1,29 @@
+{
+    "active_session": null,
+    "sessions": [
+        {
+            "project": "XianBai",
+            "start": "2026-07-12T19:39:08.147149",
+            "end": "2026-07-12T19:42:47.196647",
+            "duration_minutes": 3
+        },
+        {
+            "project": "XianBai",
+            "start": "2026-07-12T19:50:01.376424",
+            "end": "2026-07-12T19:50:13.179296",
+            "duration_minutes": 0
+        },
+        {
+            "project": "XianBai",
+            "start": "2026-07-12T19:57:43.623581",
+            "end": "2026-07-12T20:01:00.931243",
+            "duration_minutes": 3
+        },
+        {
+            "project": "XianBai",
+            "start": "2026-07-12T20:08:51.329667",
+            "end": "2026-07-12T20:09:02.591205",
+            "duration_minutes": 0
+        }
+    ]
+}

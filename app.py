@@ -63,7 +63,7 @@ register_handlers(
 
 # bot.infinity_polling()
 
-TEST_MODE = False
+TEST_MODE = 0
 
 if TEST_MODE:
 

@@ -14,6 +14,13 @@ from state_manager import (
 )
 
 
+from session_manager import (
+    start_session,
+    stop_session,
+    get_session_status,
+    get_project_stats
+)
+
 def handle_command(command):
 
 
@@ -83,4 +90,20 @@ def handle_command(command):
 
         return get_status()
             
+    if command == "/session_start":
+
+        return start_session()
+
+
+    if command == "/session_stop":
+
+        return stop_session()
+    
+    if command == "/session_status":
+        return get_session_status()
+    
+    if command == "/project_stats":
+        return get_project_stats()
+
     return "Unknown command."
+

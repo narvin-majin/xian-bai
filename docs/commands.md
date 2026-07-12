@@ -46,3 +46,25 @@ Marks a project task as completed.
 
 Example:
 /project_task_done 3
+
+## Session Commands
+
+### /session_start
+
+Starts a work session for the active project.
+
+---
+
+### /session_stop
+
+Stops the current session and saves its duration.
+
+---
+
+### /session_status
+
+Displays the currently active session.
+
+### /project_stats
+
+Display the current projects stats.

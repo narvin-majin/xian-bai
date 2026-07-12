@@ -1,0 +1,12 @@
+.venv/
+.gitignore
+.env
+app-version/
+git_command.txt
+init.txt
+repomix-output.md
+repomix.txt
+__pycache__/
+*.pyc 
+venv/
+.vscode/
