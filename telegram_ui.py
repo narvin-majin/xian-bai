@@ -9,7 +9,6 @@ from project_manager import (
     list_projects
 )
 
-
 from state_manager import (
     track_task,
     complete_task,
@@ -23,6 +22,12 @@ from session_manager import (
     stop_session,
     get_session_status,
     get_project_stats
+)
+
+from reminder_manager import (
+    add_reminder,
+    list_reminders,
+    complete_reminder
 )
 
 def register_handlers(
@@ -205,6 +210,55 @@ def register_handlers(
             get_project_stats()
         )
 
+    @bot.message_handler(commands=["reminder_add"])
+    def reminder_add(message):
+
+        title = (
+            message.text
+            .replace("/reminder_add", "")
+            .strip()
+        )
+
+        bot.reply_to(
+            message,
+            add_reminder(title)
+        )
+
+
+    @bot.message_handler(commands=["reminders"])
+    def reminders(message):
+
+        bot.reply_to(
+            message,
+            list_reminders()
+        )
+
+
+    @bot.message_handler(commands=["reminder_done"])
+    def reminder_done(message):
+
+        reminder_number = (
+            message.text
+            .replace("/reminder_done", "")
+            .strip()
+        )
+
+        try:
+            reminder_number = int(reminder_number)
+
+        except ValueError:
+
+            bot.reply_to(
+                message,
+                "Reminder number must be a number."
+            )
+            return
+
+        bot.reply_to(
+            message,
+            complete_reminder(reminder_number)
+        )
+
     # ==================================================
     # CHAT
     # ==================================================
@@ -226,3 +280,4 @@ def register_handlers(
             message,
             reply
         )
+    

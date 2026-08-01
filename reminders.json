@@ -1,0 +1,34 @@
+{
+    "reminders": [
+        {
+            "title": "Study Python",
+            "done": true,
+            "created": "2026-08-01T19:43:14.582525"
+        },
+        {
+            "title": "Buy groceries",
+            "done": true,
+            "created": "2026-08-01T19:43:14.585370"
+        },
+        {
+            "title": "Buy milk",
+            "done": true,
+            "created": "2026-08-01T19:57:46.011213"
+        },
+        {
+            "title": "Call mom",
+            "done": false,
+            "created": "2026-08-01T19:57:56.183874"
+        },
+        {
+            "title": "buy books",
+            "done": false,
+            "created": "2026-08-01T20:15:26.720042"
+        },
+        {
+            "title": "test",
+            "done": true,
+            "created": "2026-08-01T20:29:43.219545"
+        }
+    ]
+}

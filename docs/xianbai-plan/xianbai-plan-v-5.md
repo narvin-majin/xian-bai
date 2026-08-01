@@ -1,25 +1,27 @@
 # XIANBAI PLAN V5
 
 Last Updated:
-2026-07-12
+2026-08-01
 
 Completion:
-29 / 42 Steps (~69%)
+35 / 48 Steps (~73%)
 
 Current Version:
-v0.3
+v0.4 (Development)
 
 Current Development Mode:
-Terminal-first development
-Telegram fully supported
+✅ Terminal
+✅ Telegram
 
 Repository Status:
-✅ Git Initialized
-✅ GitHub Repository
-✅ Backup Workflow Started
+
+- ✅ Git Initialized
+- ✅ GitHub Repository
+- ✅ Backup Workflow
+- ✅ CHANGELOG Started
 
 Current Working Phase:
-Phase 4 - Reminder System
+Architecture Cleanup
 
 ---
 
@@ -61,21 +63,23 @@ Phase 4 - Reminder System
 
 ---
 
-## Phase 2.5 — Core Architecture Refactor
+## Phase 2.5 — Core Architecture
 
 ✅ assistant_core.py
+
+✅ command_router.py
 
 ✅ project_manager.py
 
 ✅ state_manager.py
 
+✅ session_manager.py
+
+✅ reminder_manager.py
+
 ✅ history_manager.py
 
 ✅ chat_manager.py
-
-✅ session_manager.py
-
-✅ command_router.py
 
 ✅ terminal_ui.py
 
@@ -83,9 +87,7 @@ Phase 4 - Reminder System
 
 ✅ telegram_commands.py
 
-Single source of truth achieved.
-
-Terminal and Telegram now use the same backend modules.
+Shared business logic between Terminal and Telegram achieved.
 
 ---
 
@@ -101,50 +103,60 @@ Terminal and Telegram now use the same backend modules.
 
 ✅ /project_stats
 
-Sessions now store:
+Sessions store:
 
 - project
-- start time
-- stop time
+- start
+- stop
 - duration
 
-Project statistics currently include:
+Project statistics include:
 
 - Total Sessions
 - Total Time
 - Average Session
+- Last Session
 
 ---
 
-# PHASE 4
+## Phase 4 — Reminder System
 
-Reminder System
+✅ reminders.json
 
-⬜ reminder_manager.py
+✅ reminder_manager.py
 
-⬜ reminders.json
+✅ /reminder_add
 
-⬜ /reminder_add
+✅ /reminders
 
-⬜ /reminders
+✅ /reminder_done
 
-⬜ /reminder_done
+✅ Terminal Support
+
+✅ Telegram Support
 
 ⬜ /reminder_delete
 
-⬜ Telegram reminder notifications
+⬜ Reminder Notifications
+
+Future reminder structure:
+
+- id
+- title
+- project
+- due date
+- completed
+- created
 
 ---
 
-# PHASE 5
-
-Personal Memory
+## Phase 5 — Personal Memory
 
 ⬜ memory_manager.py
 
-⬜ user_profile.json
-
 ⬜ assistant_memory.json
+
+⬜ user_profile.json
 
 ⬜ /remember
 
@@ -152,13 +164,11 @@ Personal Memory
 
 ⬜ /profile
 
-⬜ memory search
+⬜ Memory Search
 
 ---
 
-# PHASE 6
-
-Analytics
+## Phase 6 — Analytics
 
 ⬜ Daily Review
 
@@ -176,31 +186,27 @@ Analytics
 
 ---
 
-# PHASE 7
+## Phase 7 — Personal Executive Management System
 
-Personal Executive Management System
+⬜ Active Projects
 
-Current Project
+⬜ Parked Projects
 
-Parked Projects
+⬜ Project Priorities
 
-Project Priorities
+⬜ Project Categories
 
-Project Categories
+⬜ Project Archive
 
-Project Archive
+⬜ Long-term Goals
 
-Long-term Goals
+⬜ Knowledge Areas
 
-Knowledge Areas
-
-Life Dashboard
+⬜ Life Dashboard
 
 ---
 
-# PHASE 8
-
-Deployment
+## Phase 8 — Deployment
 
 ⬜ Oracle Cloud
 
@@ -214,21 +220,19 @@ Deployment
 
 ---
 
-# PHASE 9
-
-Multi-platform
+## Phase 9 — Multi-platform
 
 ⬜ Discord
+
+⬜ REST API
 
 ⬜ Web UI
 
 ⬜ Mobile Interface
 
-⬜ REST API
-
 ---
 
-# CURRENT ARCHITECTURE
+# Current Architecture
 
 app.py
 
@@ -242,38 +246,34 @@ telegram_ui.py
 
 telegram_commands.py
 
-chat_manager.py
-
 project_manager.py
 
 state_manager.py
 
 session_manager.py
 
+reminder_manager.py
+
 history_manager.py
+
+chat_manager.py
 
 ---
 
-# NEXT TASK
+# Next Priority
 
-Phase 4
+## Architecture Cleanup
 
-Reminder System
+1. Simplify telegram_ui.py
 
-Priority
+2. Make command_router.py the single command dispatcher
 
-1. reminder_manager.py
+3. Remove duplicated parsing
 
-2. reminders.json
+4. Improve command validation
 
-3. /reminder_add
+5. Prepare AppContext architecture
 
-4. /reminders
+After cleanup:
 
-5. /reminder_done
-
-6. Telegram reminder delivery
-
-After Reminder System:
-
-Begin Personal Memory.
+Begin Phase 5 — Personal Memory.

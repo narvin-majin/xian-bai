@@ -17,5 +17,8 @@ def register_commands(bot):
         BotCommand("session_start", "Start a work session"),
         BotCommand("session_stop", "Stop the current session"),
         BotCommand("session_status", "Show current session"),
-        BotCommand("project_stats","show project stats"),
+        BotCommand("project_stats","Show project stats"),
+        BotCommand("reminder_add", "Add a new reminder"),
+        BotCommand("reminders", "List all reminders"),
+        BotCommand("reminder_done", "Mark a reminder as completed"),
     ])

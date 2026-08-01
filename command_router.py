@@ -13,12 +13,17 @@ from state_manager import (
     get_status
 )
 
-
 from session_manager import (
     start_session,
     stop_session,
     get_session_status,
     get_project_stats
+)
+
+from reminder_manager import (
+    add_reminder,
+    list_reminders,
+    complete_reminder
 )
 
 def handle_command(command):
@@ -104,6 +109,36 @@ def handle_command(command):
     
     if command == "/project_stats":
         return get_project_stats()
+    
+    if command.startswith("/reminder_add"):
+
+        title = command.replace(
+            "/reminder_add",
+            ""
+        ).strip()
+
+        return add_reminder(title)
+
+
+    if command == "/reminders":
+
+        return list_reminders()
+
+
+    if command.startswith("/reminder_done"):
+
+        reminder_number = command.replace(
+            "/reminder_done",
+            ""
+        ).strip()
+
+        try:
+            reminder_number = int(reminder_number)
+
+        except ValueError:
+            return "Reminder number must be a number."
+
+        return complete_reminder(reminder_number)
 
     return "Unknown command."
 

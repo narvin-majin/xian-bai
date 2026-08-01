@@ -68,3 +68,23 @@ Displays the currently active session.
 ### /project_stats
 
 Display the current projects stats.
+
+### /reminder_add
+
+Add a new reminder.
+
+Example:
+
+/reminder_add Buy groceries
+
+### /reminders
+
+Display all reminders.
+
+### /reminder_done
+
+Mark a reminder as completed.
+
+Example:
+
+/reminder_done 2
