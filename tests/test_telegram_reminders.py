@@ -59,6 +59,7 @@ class TelegramReminderHandlerTests(unittest.TestCase):
         for message_text, expected_command, manager_args, result in cases:
             with self.subTest(message_text=message_text):
                 message = SimpleNamespace(text=message_text)
+                message.chat = SimpleNamespace(id=9876)
                 self.bot.replies.clear()
                 with patch.object(
                     command_router, "add_reminder", return_value=result
@@ -70,8 +71,15 @@ class TelegramReminderHandlerTests(unittest.TestCase):
                     ) as handle_command:
                         self.bot.handlers["reminder_add"](message)
 
-                handle_command.assert_called_once_with(expected_command)
-                add_reminder.assert_called_once_with(*manager_args)
+                handle_command.assert_called_once_with(
+                    expected_command, chat_id=9876
+                )
+                if len(manager_args) == 2:
+                    add_reminder.assert_called_once_with(
+                        *manager_args, chat_id=9876
+                    )
+                else:
+                    add_reminder.assert_called_once_with(*manager_args)
                 self.assertEqual(self.bot.replies, [(message, result)])
 
     def test_list_handler_routes_through_dispatcher_and_replies(self):

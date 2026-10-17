@@ -33,7 +33,7 @@ def _has_command_boundary(command, command_name):
     )
 
 
-def handle_command(command):
+def handle_command(command, chat_id=None):
 
 
     if command == "/projects":
@@ -124,6 +124,10 @@ def handle_command(command):
 
         if due_marker in reminder_text:
             title, due_at = reminder_text.rsplit(due_marker, 1)
+            if chat_id is not None:
+                return add_reminder(
+                    title.strip(), due_at.strip(), chat_id=chat_id
+                )
             return add_reminder(title.strip(), due_at.strip())
 
         return add_reminder(reminder_text)

@@ -5,10 +5,12 @@ from datetime import datetime
 import re
 import stat
 import tempfile
+import threading
 
 BASE_DIR = Path(__file__).resolve().parent
 
 REMINDERS_FILE = BASE_DIR / "reminders.json"
+REMINDERS_LOCK = threading.RLock()
 
 _DUE_DATE_PATTERNS = (
     (re.compile(r"\d{4}-\d{2}-\d{2}"), "%Y-%m-%d"),
@@ -48,42 +50,43 @@ def load_reminders():
 
 def save_reminders(data):
 
-    serialized = json.dumps(data, indent=4)
-    destination = Path(REMINDERS_FILE).resolve()
+    with REMINDERS_LOCK:
+        serialized = json.dumps(data, indent=4)
+        destination = Path(REMINDERS_FILE).resolve()
 
-    try:
-        existing_mode = stat.S_IMODE(destination.stat().st_mode)
-    except FileNotFoundError:
-        existing_mode = None
+        try:
+            existing_mode = stat.S_IMODE(destination.stat().st_mode)
+        except FileNotFoundError:
+            existing_mode = None
 
-    temporary_path = None
-    try:
-        with tempfile.NamedTemporaryFile(
-            mode="w",
-            encoding="utf-8",
-            dir=destination.parent,
-            prefix=f".{destination.name}.",
-            suffix=".tmp",
-            delete=False,
-        ) as temporary_file:
-            temporary_path = Path(temporary_file.name)
-            temporary_file.write(serialized)
-            temporary_file.flush()
-
-        if existing_mode is not None:
-            os.chmod(temporary_path, existing_mode)
-
-        os.replace(temporary_path, destination)
         temporary_path = None
-    finally:
-        if temporary_path is not None:
-            try:
-                temporary_path.unlink()
-            except OSError:
-                pass
+        try:
+            with tempfile.NamedTemporaryFile(
+                mode="w",
+                encoding="utf-8",
+                dir=destination.parent,
+                prefix=f".{destination.name}.",
+                suffix=".tmp",
+                delete=False,
+            ) as temporary_file:
+                temporary_path = Path(temporary_file.name)
+                temporary_file.write(serialized)
+                temporary_file.flush()
+
+            if existing_mode is not None:
+                os.chmod(temporary_path, existing_mode)
+
+            os.replace(temporary_path, destination)
+            temporary_path = None
+        finally:
+            if temporary_path is not None:
+                try:
+                    temporary_path.unlink()
+                except OSError:
+                    pass
 
 
-def add_reminder(title, due_at=None):
+def add_reminder(title, due_at=None, chat_id=None):
 
     if not title.strip():
         return "Usage: /reminder_add Reminder"
@@ -94,25 +97,28 @@ def add_reminder(title, due_at=None):
             "YYYY-MM-DD HH:MM."
         )
 
-    try:
-        reminders = load_reminders()
-    except (OSError, UnicodeError, json.JSONDecodeError):
-        return "Could not read reminders data. Check reminders.json."
+    with REMINDERS_LOCK:
+        try:
+            reminders = load_reminders()
+        except (OSError, UnicodeError, json.JSONDecodeError):
+            return "Could not read reminders data. Check reminders.json."
 
-    new_reminder = {
-        "title": title,
-        "done": False,
-        "created": datetime.now().isoformat()
-    }
-    if due_at is not None:
-        new_reminder["due_at"] = due_at
+        new_reminder = {
+            "title": title,
+            "done": False,
+            "created": datetime.now().isoformat()
+        }
+        if due_at is not None:
+            new_reminder["due_at"] = due_at
+        if chat_id is not None:
+            new_reminder["chat_id"] = chat_id
 
-    reminders["reminders"].append(new_reminder)
+        reminders["reminders"].append(new_reminder)
 
-    try:
-        save_reminders(reminders)
-    except (OSError, TypeError, ValueError):
-        return "Could not save reminders data. Check reminders.json and try again."
+        try:
+            save_reminders(reminders)
+        except (OSError, TypeError, ValueError):
+            return "Could not save reminders data. Check reminders.json and try again."
 
     return f"Reminder added: {title}"
 
@@ -146,29 +152,30 @@ def list_reminders():
 
 def complete_reminder(reminder_number):
 
-    try:
-        reminders = load_reminders()
-    except (OSError, UnicodeError, json.JSONDecodeError):
-        return "Could not read reminders data. Check reminders.json."
+    with REMINDERS_LOCK:
+        try:
+            reminders = load_reminders()
+        except (OSError, UnicodeError, json.JSONDecodeError):
+            return "Could not read reminders data. Check reminders.json."
 
-    reminder_list = reminders["reminders"]
+        reminder_list = reminders["reminders"]
 
-    if not isinstance(reminder_number, int):
-        return "Reminder number must be a number."
+        if not isinstance(reminder_number, int):
+            return "Reminder number must be a number."
 
-    if reminder_number < 1 or reminder_number > len(reminder_list):
-        return "Invalid reminder number."
+        if reminder_number < 1 or reminder_number > len(reminder_list):
+            return "Invalid reminder number."
 
-    reminder = reminder_list[reminder_number - 1]
+        reminder = reminder_list[reminder_number - 1]
 
-    if reminder["done"]:
-        return "Reminder already completed."
+        if reminder["done"]:
+            return "Reminder already completed."
 
-    reminder["done"] = True
+        reminder["done"] = True
 
-    try:
-        save_reminders(reminders)
-    except (OSError, TypeError, ValueError):
-        return "Could not save reminders data. Check reminders.json and try again."
+        try:
+            save_reminders(reminders)
+        except (OSError, TypeError, ValueError):
+            return "Could not save reminders data. Check reminders.json and try again."
 
     return f"Completed: {reminder['title']}"

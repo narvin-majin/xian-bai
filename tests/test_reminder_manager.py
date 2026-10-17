@@ -99,6 +99,15 @@ class ReminderManagerTests(unittest.TestCase):
         self.assertIn("2. [ ] Pay rent (due: 2030-06-01)\n", listing)
         self.assertIn("3. [ ] Call dentist (due: 2030-06-02 09:30)\n", listing)
 
+    def test_timed_telegram_reminder_stores_its_chat_id(self):
+        result = reminder_manager.add_reminder(
+            "Call dentist", "2030-06-02 09:30", chat_id=9876
+        )
+
+        self.assertEqual(result, "Reminder added: Call dentist")
+        reminder = reminder_manager.load_reminders()["reminders"][0]
+        self.assertEqual(reminder["chat_id"], 9876)
+
     def test_invalid_due_dates_are_rejected_without_modifying_data(self):
         original_bytes = b'{"reminders": [{"title": "Existing", "done": false}]}'
         reminder_manager.REMINDERS_FILE.write_bytes(original_bytes)

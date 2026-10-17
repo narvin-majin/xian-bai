@@ -217,7 +217,7 @@ def register_handlers(
 
         bot.reply_to(
             message,
-            handle_command(command)
+            handle_command(command, chat_id=message.chat.id)
         )
 
 

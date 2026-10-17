@@ -3,6 +3,7 @@ import json
 
 from terminal_ui import start_terminal
 from telegram_ui import register_handlers
+from reminder_scheduler import run_with_polling
 
 from dotenv import load_dotenv
 import telebot
@@ -84,4 +85,7 @@ if TEST_MODE:
 else:
 
     print("Bot is running...")
-    bot.infinity_polling()
+    run_with_polling(
+        bot,
+        lambda chat_id, text: bot.send_message(chat_id, text),
+    )
