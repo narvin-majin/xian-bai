@@ -26,6 +26,13 @@ from reminder_manager import (
     complete_reminder
 )
 
+def _has_command_boundary(command, command_name):
+    return command == command_name or (
+        command.startswith(command_name)
+        and command[len(command_name)].isspace()
+    )
+
+
 def handle_command(command):
 
 
@@ -110,7 +117,7 @@ def handle_command(command):
     if command == "/project_stats":
         return get_project_stats()
     
-    if command.startswith("/reminder_add"):
+    if _has_command_boundary(command, "/reminder_add"):
 
         title = command.replace(
             "/reminder_add",
@@ -125,7 +132,7 @@ def handle_command(command):
         return list_reminders()
 
 
-    if command.startswith("/reminder_done"):
+    if _has_command_boundary(command, "/reminder_done"):
 
         reminder_number = command.replace(
             "/reminder_done",
