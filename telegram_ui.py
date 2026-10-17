@@ -1,12 +1,12 @@
 from telegram_commands import register_commands
+from command_router import handle_command
 
 from project_manager import (
     create_project,
     switch_project,
     add_project_task,
     get_project_tasks,
-    complete_project_task,
-    list_projects
+    complete_project_task
 )
 
 from state_manager import (
@@ -107,9 +107,10 @@ def register_handlers(
     @bot.message_handler(commands=["projects"])
     def projects_cmd(message):
 
+        result = handle_command("/projects")
         bot.reply_to(
             message,
-            list_projects()
+            result
         )
 
 
@@ -280,4 +281,4 @@ def register_handlers(
             message,
             reply
         )
-    
+
