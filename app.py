@@ -1,4 +1,5 @@
 import os
+import json
 
 from terminal_ui import start_terminal
 from telegram_ui import register_handlers
@@ -21,7 +22,12 @@ chat_history = load_chat_history()
 from project_manager import (
     load_projects,
 )
-projects = load_projects()
+try:
+    projects = load_projects()
+except (OSError, UnicodeError, json.JSONDecodeError):
+    raise SystemExit(
+        "Could not read projects data. Check projects.json before starting Xiao Bai."
+    ) from None
 
 
 # ==================================================

@@ -1,5 +1,8 @@
 import json
+import os
 from pathlib import Path
+import stat
+import tempfile
 
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -12,7 +15,7 @@ def load_projects():
         with open(PROJECTS_FILE, "r") as f:
             return json.load(f)
 
-    except Exception:
+    except FileNotFoundError:
         return {
             "active_project": None,
             "projects": {}
@@ -21,12 +24,46 @@ def load_projects():
 
 def save_projects(data):
 
-    with open(PROJECTS_FILE, "w") as f:
-        json.dump(data, f, indent=4)
+    serialized = json.dumps(data, indent=4)
+    destination = Path(PROJECTS_FILE).resolve()
+
+    try:
+        existing_mode = stat.S_IMODE(destination.stat().st_mode)
+    except FileNotFoundError:
+        existing_mode = None
+
+    temporary_path = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=destination.parent,
+            prefix=f".{destination.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as temporary_file:
+            temporary_path = Path(temporary_file.name)
+            temporary_file.write(serialized)
+            temporary_file.flush()
+
+        if existing_mode is not None:
+            os.chmod(temporary_path, existing_mode)
+
+        os.replace(temporary_path, destination)
+        temporary_path = None
+    finally:
+        if temporary_path is not None:
+            try:
+                temporary_path.unlink()
+            except OSError:
+                pass
 
 def list_projects():
 
-    projects = load_projects()
+    try:
+        projects = load_projects()
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return "Could not read projects data. Check projects.json."
 
     if not projects["projects"]:
         return "No projects found."
@@ -46,7 +83,13 @@ def list_projects():
 
 def create_project(name):
 
-    projects = load_projects()
+    if not name.strip():
+        return "Usage: /project_create Project Name"
+
+    try:
+        projects = load_projects()
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return "Could not read projects data. Check projects.json."
 
     for existing_project in projects["projects"]:
 
@@ -58,13 +101,19 @@ def create_project(name):
         "created": ""
     }
 
-    save_projects(projects)
+    try:
+        save_projects(projects)
+    except (OSError, TypeError, ValueError):
+        return "Could not save projects data. Check projects.json and try again."
 
     return f"Created project: {name}"
 
 def switch_project(name):
 
-    projects = load_projects()
+    try:
+        projects = load_projects()
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return "Could not read projects data. Check projects.json."
 
     search_name = name.lower()
 
@@ -81,13 +130,22 @@ def switch_project(name):
 
     projects["active_project"] = matched_project
 
-    save_projects(projects)
+    try:
+        save_projects(projects)
+    except (OSError, TypeError, ValueError):
+        return "Could not save projects data. Check projects.json and try again."
 
     return f"Active project: {matched_project}"
 
 def add_project_task(task_name):
 
-    projects = load_projects()
+    if not task_name.strip():
+        return "Usage: /project_task_add Task Name"
+
+    try:
+        projects = load_projects()
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return "Could not read projects data. Check projects.json."
 
     active_project = projects["active_project"]
 
@@ -101,13 +159,19 @@ def add_project_task(task_name):
         }
     )
 
-    save_projects(projects)
+    try:
+        save_projects(projects)
+    except (OSError, TypeError, ValueError):
+        return "Could not save projects data. Check projects.json and try again."
 
     return f"Task added to {active_project}"
 
 def get_project_tasks():
 
-    projects = load_projects()
+    try:
+        projects = load_projects()
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return "Could not read projects data. Check projects.json."
 
     active_project = projects["active_project"]
 
@@ -131,7 +195,10 @@ def get_project_tasks():
 
 def complete_project_task(task_number):
 
-    projects = load_projects()
+    try:
+        projects = load_projects()
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return "Could not read projects data. Check projects.json."
 
     active_project = projects["active_project"]
 
@@ -150,7 +217,10 @@ def complete_project_task(task_number):
 
     task["done"] = True
 
-    save_projects(projects)
+    try:
+        save_projects(projects)
+    except (OSError, TypeError, ValueError):
+        return "Could not save projects data. Check projects.json and try again."
 
     return f"Completed: {task['task']}"
 

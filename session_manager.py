@@ -36,7 +36,10 @@ def start_session():
     if sessions["active_session"] is not None:
         return "A session is already running."
 
-    projects = load_projects()
+    try:
+        projects = load_projects()
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return "Could not read projects data. Check projects.json."
 
     active_project = projects["active_project"]
 
@@ -111,7 +114,10 @@ def get_project_stats():
 
     sessions = load_sessions()
 
-    projects = load_projects()
+    try:
+        projects = load_projects()
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return "Could not read projects data. Check projects.json."
 
     active_project = projects["active_project"]
 
