@@ -2,12 +2,36 @@ import json
 import os
 from pathlib import Path
 from datetime import datetime
+import re
 import stat
 import tempfile
 
 BASE_DIR = Path(__file__).resolve().parent
 
 REMINDERS_FILE = BASE_DIR / "reminders.json"
+
+_DUE_DATE_PATTERNS = (
+    (re.compile(r"\d{4}-\d{2}-\d{2}"), "%Y-%m-%d"),
+    (re.compile(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}"), "%Y-%m-%d %H:%M"),
+)
+
+
+def _is_valid_due_at(due_at):
+
+    if not isinstance(due_at, str):
+        return False
+
+    for pattern, date_format in _DUE_DATE_PATTERNS:
+        if not pattern.fullmatch(due_at):
+            continue
+
+        try:
+            datetime.strptime(due_at, date_format)
+            return True
+        except ValueError:
+            return False
+
+    return False
 
 
 def load_reminders():
@@ -59,23 +83,31 @@ def save_reminders(data):
                 pass
 
 
-def add_reminder(title):
+def add_reminder(title, due_at=None):
 
     if not title.strip():
         return "Usage: /reminder_add Reminder"
+
+    if due_at is not None and not _is_valid_due_at(due_at):
+        return (
+            "Invalid due date/time. Use YYYY-MM-DD or "
+            "YYYY-MM-DD HH:MM."
+        )
 
     try:
         reminders = load_reminders()
     except (OSError, UnicodeError, json.JSONDecodeError):
         return "Could not read reminders data. Check reminders.json."
 
-    reminders["reminders"].append(
-        {
-            "title": title,
-            "done": False,
-            "created": datetime.now().isoformat()
-        }
-    )
+    new_reminder = {
+        "title": title,
+        "done": False,
+        "created": datetime.now().isoformat()
+    }
+    if due_at is not None:
+        new_reminder["due_at"] = due_at
+
+    reminders["reminders"].append(new_reminder)
 
     try:
         save_reminders(reminders)
@@ -102,9 +134,12 @@ def list_reminders():
     for index, reminder in enumerate(reminder_list, start=1):
 
         status = "[x]" if reminder["done"] else "[ ]"
+        due_text = (
+            f" (due: {reminder['due_at']})" if reminder.get("due_at") else ""
+        )
 
         output += (
-            f"{index}. {status} {reminder['title']}\n"
+            f"{index}. {status} {reminder['title']}{due_text}\n"
         )
 
     return output

@@ -68,6 +68,59 @@ class ReminderManagerTests(unittest.TestCase):
         reminder = reminder_manager.load_reminders()["reminders"][0]
         self.assertEqual(reminder["title"], "Buy groceries")
         self.assertFalse(reminder["done"])
+        self.assertNotIn("due_at", reminder)
+
+    def test_due_date_and_time_are_stored_and_listed(self):
+        original_data = {
+            "reminders": [
+                {"title": "Legacy reminder", "done": False, "created": "today"}
+            ],
+            "other_data": {"preserve": True},
+        }
+        reminder_manager.REMINDERS_FILE.write_text(
+            json.dumps(original_data), encoding="utf-8"
+        )
+
+        date_result = reminder_manager.add_reminder("Pay rent", "2030-06-01")
+        date_time_result = reminder_manager.add_reminder(
+            "Call dentist", "2030-06-02 09:30"
+        )
+
+        saved_data = reminder_manager.load_reminders()
+        self.assertEqual(date_result, "Reminder added: Pay rent")
+        self.assertEqual(date_time_result, "Reminder added: Call dentist")
+        self.assertEqual(saved_data["reminders"][0], original_data["reminders"][0])
+        self.assertEqual(saved_data["other_data"], original_data["other_data"])
+        self.assertEqual(saved_data["reminders"][1]["due_at"], "2030-06-01")
+        self.assertEqual(saved_data["reminders"][2]["due_at"], "2030-06-02 09:30")
+
+        listing = reminder_manager.list_reminders()
+        self.assertIn("1. [ ] Legacy reminder\n", listing)
+        self.assertIn("2. [ ] Pay rent (due: 2030-06-01)\n", listing)
+        self.assertIn("3. [ ] Call dentist (due: 2030-06-02 09:30)\n", listing)
+
+    def test_invalid_due_dates_are_rejected_without_modifying_data(self):
+        original_bytes = b'{"reminders": [{"title": "Existing", "done": false}]}'
+        reminder_manager.REMINDERS_FILE.write_bytes(original_bytes)
+        invalid_due_values = (
+            "",
+            "2030/06/01",
+            "2030-02-30",
+            "2030-06-01 24:00",
+            "2030-06-01 09:60",
+        )
+
+        for due_at in invalid_due_values:
+            with self.subTest(due_at=due_at):
+                result = reminder_manager.add_reminder("New reminder", due_at)
+
+                self.assertEqual(
+                    result,
+                    "Invalid due date/time. Use YYYY-MM-DD or YYYY-MM-DD HH:MM.",
+                )
+                self.assertEqual(
+                    reminder_manager.REMINDERS_FILE.read_bytes(), original_bytes
+                )
 
     def test_non_numeric_reminder_number_is_rejected_without_modifying_file(self):
         original_bytes = b'{"reminders": [{"title": "Buy groceries", "done": false}]}'

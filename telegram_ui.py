@@ -25,8 +25,6 @@ from session_manager import (
 )
 
 from reminder_manager import (
-    add_reminder,
-    list_reminders,
     complete_reminder
 )
 
@@ -214,24 +212,22 @@ def register_handlers(
     @bot.message_handler(commands=["reminder_add"])
     def reminder_add(message):
 
-        title = (
-            message.text
-            .replace("/reminder_add", "")
-            .strip()
-        )
+        reminder_arguments = message.text.partition(" ")[2]
+        command = f"/reminder_add {reminder_arguments}".rstrip()
 
         bot.reply_to(
             message,
-            add_reminder(title)
+            handle_command(command)
         )
 
 
     @bot.message_handler(commands=["reminders"])
     def reminders(message):
 
+        result = handle_command("/reminders")
         bot.reply_to(
             message,
-            list_reminders()
+            result
         )
 
 

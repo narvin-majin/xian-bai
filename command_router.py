@@ -119,12 +119,14 @@ def handle_command(command):
     
     if _has_command_boundary(command, "/reminder_add"):
 
-        title = command.replace(
-            "/reminder_add",
-            ""
-        ).strip()
+        reminder_text = command[len("/reminder_add"):].strip()
+        due_marker = " --due"
 
-        return add_reminder(title)
+        if due_marker in reminder_text:
+            title, due_at = reminder_text.rsplit(due_marker, 1)
+            return add_reminder(title.strip(), due_at.strip())
+
+        return add_reminder(reminder_text)
 
 
     if command == "/reminders":

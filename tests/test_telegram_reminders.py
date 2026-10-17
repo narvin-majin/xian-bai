@@ -2,6 +2,7 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import patch
 
+import command_router
 import telegram_ui
 
 
@@ -39,22 +40,41 @@ class TelegramReminderHandlerTests(unittest.TestCase):
             save_chat_history=lambda history: None,
         )
 
-    def test_add_handler_sends_valid_title_to_manager_and_replies(self):
-        message = SimpleNamespace(text="/reminder_add Sample reminder")
-        with patch.object(
-            telegram_ui,
-            "add_reminder",
-            return_value="Reminder added: Sample reminder",
-        ) as add_reminder:
-            self.bot.handlers["reminder_add"](message)
-
-        add_reminder.assert_called_once_with("Sample reminder")
-        self.assertEqual(
-            self.bot.replies,
-            [(message, "Reminder added: Sample reminder")],
+    def test_add_handler_routes_through_dispatcher_with_optional_due(self):
+        cases = (
+            (
+                "/reminder_add@xiaobai_bot Sample reminder",
+                "/reminder_add Sample reminder",
+                ("Sample reminder",),
+                "Reminder added: Sample reminder",
+            ),
+            (
+                "/reminder_add@xiaobai_bot Call dentist --due 2030-06-02 09:30",
+                "/reminder_add Call dentist --due 2030-06-02 09:30",
+                ("Call dentist", "2030-06-02 09:30"),
+                "Reminder added: Call dentist",
+            ),
         )
 
-    def test_list_handler_replies_for_existing_and_empty_lists(self):
+        for message_text, expected_command, manager_args, result in cases:
+            with self.subTest(message_text=message_text):
+                message = SimpleNamespace(text=message_text)
+                self.bot.replies.clear()
+                with patch.object(
+                    command_router, "add_reminder", return_value=result
+                ) as add_reminder:
+                    with patch.object(
+                        telegram_ui,
+                        "handle_command",
+                        wraps=command_router.handle_command,
+                    ) as handle_command:
+                        self.bot.handlers["reminder_add"](message)
+
+                handle_command.assert_called_once_with(expected_command)
+                add_reminder.assert_called_once_with(*manager_args)
+                self.assertEqual(self.bot.replies, [(message, result)])
+
+    def test_list_handler_routes_through_dispatcher_and_replies(self):
         message = SimpleNamespace(text="/reminders")
         results = [
             "Reminders:\n\n1. [ ] Sample reminder\n",
@@ -65,10 +85,16 @@ class TelegramReminderHandlerTests(unittest.TestCase):
             with self.subTest(result=result):
                 self.bot.replies.clear()
                 with patch.object(
-                    telegram_ui, "list_reminders", return_value=result
+                    command_router, "list_reminders", return_value=result
                 ) as list_reminders:
-                    self.bot.handlers["reminders"](message)
+                    with patch.object(
+                        telegram_ui,
+                        "handle_command",
+                        wraps=command_router.handle_command,
+                    ) as handle_command:
+                        self.bot.handlers["reminders"](message)
 
+                handle_command.assert_called_once_with("/reminders")
                 list_reminders.assert_called_once_with()
                 self.assertEqual(self.bot.replies, [(message, result)])
 

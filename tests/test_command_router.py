@@ -37,6 +37,19 @@ class ReminderCommandRoutingTests(unittest.TestCase):
         self.assertEqual(result, "Completed: Sample reminder")
         complete_reminder.assert_called_once_with(1)
 
+    def test_reminder_add_dispatches_optional_due_date_and_time(self):
+        with patch.object(
+            command_router,
+            "add_reminder",
+            return_value="Reminder added: Call dentist",
+        ) as add_reminder:
+            result = command_router.handle_command(
+                "/reminder_add Call dentist --due 2030-06-02 09:30"
+            )
+
+        self.assertEqual(result, "Reminder added: Call dentist")
+        add_reminder.assert_called_once_with("Call dentist", "2030-06-02 09:30")
+
     def test_reminder_commands_without_arguments_keep_existing_validation(self):
         with patch.object(
             command_router, "add_reminder", return_value="Usage: /reminder_add Reminder"
