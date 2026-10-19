@@ -6,6 +6,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import reminder_manager
+import command_router
 
 
 def make_failing_temp_file(path):
@@ -45,6 +46,78 @@ class ReminderManagerTests(unittest.TestCase):
         self.assertEqual(
             reminder_manager.load_reminders()["reminders"][0]["done"], True
         )
+
+    def test_reschedule_updates_date_and_preserves_unrelated_fields(self):
+        original_data = {
+            "reminders": [
+                {
+                    "title": "Pay rent",
+                    "done": False,
+                    "created": "today",
+                    "chat_id": 9876,
+                    "custom": "keep",
+                    "notified": True,
+                },
+                {"title": "Other", "done": False, "due_at": "2030-06-02"},
+            ],
+            "other_data": {"preserve": True},
+        }
+        reminder_manager.REMINDERS_FILE.write_text(
+            json.dumps(original_data), encoding="utf-8"
+        )
+
+        result = reminder_manager.reschedule_reminder(1, "2030-06-03")
+
+        saved = reminder_manager.load_reminders()
+        self.assertEqual(result, "Rescheduled: Pay rent")
+        self.assertEqual(saved["reminders"][0]["due_at"], "2030-06-03")
+        self.assertFalse(saved["reminders"][0]["notified"])
+        self.assertEqual(saved["reminders"][0]["title"], "Pay rent")
+        self.assertFalse(saved["reminders"][0]["done"])
+        self.assertEqual(saved["reminders"][0]["created"], "today")
+        self.assertEqual(saved["reminders"][0]["chat_id"], 9876)
+        self.assertEqual(saved["reminders"][0]["custom"], "keep")
+        self.assertEqual(saved["reminders"][1], original_data["reminders"][1])
+        self.assertEqual(saved["other_data"], original_data["other_data"])
+
+        timed_result = reminder_manager.reschedule_reminder(
+            2, "2030-06-04 09:30"
+        )
+        self.assertEqual(timed_result, "Rescheduled: Other")
+        self.assertEqual(
+            reminder_manager.load_reminders()["reminders"][1]["due_at"],
+            "2030-06-04 09:30",
+        )
+
+    def test_reschedule_rejects_invalid_due_and_number_without_modifying_file(self):
+        original_bytes = b'{"reminders": [{"title": "Existing", "done": false}]}'
+        reminder_manager.REMINDERS_FILE.write_bytes(original_bytes)
+
+        cases = (
+            (1, "2030-02-30", "Invalid due date/time. Use YYYY-MM-DD or YYYY-MM-DD HH:MM."),
+            ("one", "2030-06-01", "Reminder number must be a number."),
+            (0, "2030-06-01", "Invalid reminder number."),
+            (-1, "2030-06-01", "Invalid reminder number."),
+            (2, "2030-06-01", "Invalid reminder number."),
+        )
+        for reminder_number, due_at, expected in cases:
+            with self.subTest(reminder_number=reminder_number, due_at=due_at):
+                self.assertEqual(
+                    reminder_manager.reschedule_reminder(reminder_number, due_at),
+                    expected,
+                )
+                self.assertEqual(
+                    reminder_manager.REMINDERS_FILE.read_bytes(), original_bytes
+                )
+
+    def test_reschedule_rejects_completed_reminder_without_modifying_file(self):
+        original_bytes = b'{"reminders": [{"title": "Existing", "done": true}]}'
+        reminder_manager.REMINDERS_FILE.write_bytes(original_bytes)
+
+        result = reminder_manager.reschedule_reminder(1, "2030-06-01")
+
+        self.assertEqual(result, "Reminder already completed.")
+        self.assertEqual(reminder_manager.REMINDERS_FILE.read_bytes(), original_bytes)
 
     def test_empty_reminder_title_is_rejected_without_creating_file(self):
         result = reminder_manager.add_reminder("")
@@ -107,6 +180,35 @@ class ReminderManagerTests(unittest.TestCase):
         self.assertEqual(result, "Reminder added: Call dentist")
         reminder = reminder_manager.load_reminders()["reminders"][0]
         self.assertEqual(reminder["chat_id"], 9876)
+
+    def test_router_stores_valid_timed_reminder_fields(self):
+        result = command_router.handle_command(
+            "/reminder_add test --due 2026-10-17 21:25", chat_id=9876
+        )
+
+        self.assertEqual(result, "Reminder added: test")
+        reminder = reminder_manager.load_reminders()["reminders"][0]
+        self.assertEqual(reminder["title"], "test")
+        self.assertEqual(reminder["due_at"], "2026-10-17 21:25")
+        self.assertEqual(reminder["chat_id"], 9876)
+
+    def test_malformed_due_options_are_rejected_without_creating_data(self):
+        malformed_commands = (
+            "/reminder_add test --due",
+            "/reminder_add test --due=2026-10-17 21:25",
+            "/reminder_add test --due 2026-10-17 21:25 extra",
+        )
+
+        for command in malformed_commands:
+            with self.subTest(command=command):
+                result = command_router.handle_command(command, chat_id=9876)
+
+                self.assertEqual(
+                    result,
+                    "Invalid due date/time. Use YYYY-MM-DD or "
+                    "YYYY-MM-DD HH:MM.",
+                )
+                self.assertFalse(reminder_manager.REMINDERS_FILE.exists())
 
     def test_invalid_due_dates_are_rejected_without_modifying_data(self):
         original_bytes = b'{"reminders": [{"title": "Existing", "done": false}]}'
@@ -214,6 +316,7 @@ class ReminderManagerTests(unittest.TestCase):
             ("add", lambda: reminder_manager.add_reminder("New reminder")),
             ("list", reminder_manager.list_reminders),
             ("complete", lambda: reminder_manager.complete_reminder(1)),
+            ("reschedule", lambda: reminder_manager.reschedule_reminder(1, "2030-06-01")),
         ]
 
         with patch.object(reminder_manager, "save_reminders") as save:
@@ -236,6 +339,7 @@ class ReminderManagerTests(unittest.TestCase):
             ("add", lambda: reminder_manager.add_reminder("New reminder")),
             ("list", reminder_manager.list_reminders),
             ("complete", lambda: reminder_manager.complete_reminder(1)),
+            ("reschedule", lambda: reminder_manager.reschedule_reminder(1, "2030-06-01")),
         ]
 
         with patch("builtins.open", side_effect=PermissionError("read denied")):

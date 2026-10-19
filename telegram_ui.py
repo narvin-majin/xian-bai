@@ -27,6 +27,8 @@ from session_manager import (
 from reminder_manager import (
     complete_reminder
 )
+import preview_manager
+from reminder_intent import handle_reminder_request
 
 def register_handlers(
     bot,
@@ -256,6 +258,32 @@ def register_handlers(
             complete_reminder(reminder_number)
         )
 
+
+    @bot.message_handler(commands=["confirm"])
+    def confirm(message):
+        bot.reply_to(
+            message,
+            handle_command("/confirm", chat_id=message.chat.id)
+        )
+
+
+    @bot.message_handler(commands=["cancel"])
+    def cancel(message):
+        bot.reply_to(
+            message,
+            handle_command("/cancel", chat_id=message.chat.id)
+        )
+
+
+    @bot.message_handler(commands=["edit"])
+    def edit(message):
+        edit_arguments = message.text.partition(" ")[2]
+        command = f"/edit {edit_arguments}".rstrip()
+        bot.reply_to(
+            message,
+            handle_command(command, chat_id=message.chat.id)
+        )
+
     # ==================================================
     # CHAT
     # ==================================================
@@ -263,8 +291,16 @@ def register_handlers(
     @bot.message_handler(func=lambda message: True)
     def chat(message):
 
+        text = message.text.strip()
+        reply = handle_reminder_request(
+            text, preview_manager.session_key(message.chat.id)
+        )
+        if reply is not None:
+            bot.reply_to(message, reply)
+            return
+
         reply = process_message(
-            message.text.strip(),
+            text,
             state,
             projects,
             chat_history,

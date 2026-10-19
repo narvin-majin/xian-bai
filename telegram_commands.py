@@ -21,4 +21,7 @@ def register_commands(bot):
         BotCommand("reminder_add", "Add a new reminder"),
         BotCommand("reminders", "List all reminders"),
         BotCommand("reminder_done", "Mark a reminder as completed"),
+        BotCommand("confirm", "Confirm the pending preview"),
+        BotCommand("cancel", "Cancel the pending preview"),
+        BotCommand("edit", "Edit the pending reminder preview"),
     ])

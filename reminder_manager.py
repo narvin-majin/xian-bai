@@ -179,3 +179,41 @@ def complete_reminder(reminder_number):
             return "Could not save reminders data. Check reminders.json and try again."
 
     return f"Completed: {reminder['title']}"
+
+
+def reschedule_reminder(reminder_number, due_at):
+
+    if not _is_valid_due_at(due_at):
+        return (
+            "Invalid due date/time. Use YYYY-MM-DD or "
+            "YYYY-MM-DD HH:MM."
+        )
+
+    with REMINDERS_LOCK:
+        try:
+            reminders = load_reminders()
+        except (OSError, UnicodeError, json.JSONDecodeError):
+            return "Could not read reminders data. Check reminders.json."
+
+        reminder_list = reminders["reminders"]
+
+        if not isinstance(reminder_number, int):
+            return "Reminder number must be a number."
+
+        if reminder_number < 1 or reminder_number > len(reminder_list):
+            return "Invalid reminder number."
+
+        reminder = reminder_list[reminder_number - 1]
+
+        if reminder["done"]:
+            return "Reminder already completed."
+
+        reminder["due_at"] = due_at
+        reminder["notified"] = False
+
+        try:
+            save_reminders(reminders)
+        except (OSError, TypeError, ValueError):
+            return "Could not save reminders data. Check reminders.json and try again."
+
+    return f"Rescheduled: {reminder['title']}"

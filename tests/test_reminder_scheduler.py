@@ -48,6 +48,42 @@ class ReminderSchedulerTests(unittest.TestCase):
         sender.assert_called_once_with(12345, "Reminder: Pay rent")
         self.assertTrue(reminder_manager.load_reminders()["reminders"][0]["notified"])
 
+    def test_rescheduled_previously_notified_reminder_sends_again_at_new_time(self):
+        self.write_reminders([
+            {
+                "title": "Pay rent",
+                "done": False,
+                "due_at": "2030-06-02 08:00",
+                "chat_id": 12345,
+            }
+        ])
+        sender = Mock()
+        first_time = datetime(2030, 6, 2, 8, 0)
+        sent = reminder_scheduler.check_due_reminders(sender, now=first_time)
+        self.assertEqual(sent, 1)
+        sender.assert_called_once_with(12345, "Reminder: Pay rent")
+        self.assertTrue(reminder_manager.load_reminders()["reminders"][0]["notified"])
+
+        sender.reset_mock()
+        reschedule_result = reminder_manager.reschedule_reminder(
+            1, "2030-06-03 09:00"
+        )
+        self.assertEqual(reschedule_result, "Rescheduled: Pay rent")
+        self.assertFalse(reminder_manager.load_reminders()["reminders"][0]["notified"])
+
+        intermediate_time = datetime(2030, 6, 2, 12, 0)
+        self.assertEqual(
+            reminder_scheduler.check_due_reminders(sender, now=intermediate_time), 0
+        )
+        sender.assert_not_called()
+
+        new_due_time = datetime(2030, 6, 3, 9, 0)
+        self.assertEqual(
+            reminder_scheduler.check_due_reminders(sender, now=new_due_time), 1
+        )
+        sender.assert_called_once_with(12345, "Reminder: Pay rent")
+        self.assertTrue(reminder_manager.load_reminders()["reminders"][0]["notified"])
+
     def test_only_timed_incomplete_and_addressable_reminders_are_sent(self):
         self.write_reminders([
             {"title": "Date only", "done": False, "due_at": "2030-06-01", "chat_id": 1},
